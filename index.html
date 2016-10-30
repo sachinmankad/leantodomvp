@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lean Todo</title>
+	<meta name="HandheldFriendly" content="true"/>
+	<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes"/>
+	<title>Todo</title>
+	<link rel="stylesheet" href="css/style.css" type="text/css"/>
+  <link rel="stylesheet" href="css/style.css" type="text/css"/>
+</head>
+<body>
+<header class="Header">
+	<div class="Logo">
+		LEAN Todo
+	</div>
+</header>
+<div class="Content">
+  <div class="Task__Wrapper">
+    <input autofocus="true" id="taskBox" type="text" class="Task__Input" placeholder="Create a task here...."/>
+    <button id="addTask" class="Task__Button Task__Button--add">Add Task</button>
+  </div>
+
+  <ol class="TaskList"></ol>
+
+</div>
+<footer class="Footer">
+  designed by sachin mankad
+</footer>
+</body>
+
+<script type="text/template" id="TaskTpl">
+	<li class="Task {className}">  
+		<div class="Task__Wrapper hide" id="{id}_task-edit-wrapper">
+			<input id="{id}_todo-edit-box" autofocus="true" type="text" class="Task__Input" value="{name}"/>
+			<button id="{id}_todo-save-btn" class="Task__Button Task__Button--add">Update Task</button>
+		</div>
+		<div class="Task__Wrapper" id="{id}_task-control-wrapper">
+			<div class="Task__Icon Task__Icon--done" data-id="{id}"></div>
+			<p id="{id}_task-label" class="Task__Name">{name}</p>
+			<img class="Task__Icon Task__Icon--edit" src="images/edit.svg" data-id="{id}"/>
+			<img class="Task__Icon Task__Icon--delete" src="images/delete.svg" data-id="{id}"/>
+		</div>
+	</li>
+</script>
+
+<script type="text/javascript" src="js/app.js"></script>
+</html>
