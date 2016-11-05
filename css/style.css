@@ -33,6 +33,78 @@ body  {
 	}
   }
 
+.TaskList__Filter {
+  display: flex;
+  margin: 15px 0 0 0;
+  padding: 0;
+}
+
+.FilterLabel{
+  font-size: 16px;
+  color: #999;
+  padding-right: 15px;
+  margin-top: 7px;
+}
+.SelectBox {
+  display :flex;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 250px;
+  height: 34px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #999;
+  padding: 0;
+  box-sizing: border-box;
+}
+.SelectBox__Text {
+  margin: 0;
+  padding: 0 15px;
+  flex-shrink: 0;
+  flex-grow: 1;
+}
+.SelectBox__Icon {
+  width:0;
+  height:0;
+  margin-right:10px;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:5px solid #000;
+  opacity:0.3;
+}
+.SelectBox__Icon:hover {
+  opacity:1;
+}
+.SelectBox__List {
+  background:white;
+  position:absolute;
+  max-width:247px;
+  z-index:1;
+  padding:0;
+  margin:0;
+  margin-top:60px;
+  border:1px solid #eee;
+  border-bottom-left-radius:4px;
+  border-bottom-right-radius:4px;
+  list-style:none;
+  width:100%;
+  flex-grow:1;
+  flex-shrink:0;
+}
+.SelectBox__ListItem {
+  padding:5px 15px;
+  opacity:0.5;
+}
+.SelectBox__ListItem:hover{
+  opacity:1;
+  background-color:#eee;
+}
+.SelectBox__ListItem--selected {
+  background-color:#eee;
+}
+
 .TaskList {
   margin: 30px 0;
   padding: 0;
