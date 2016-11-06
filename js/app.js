@@ -75,7 +75,7 @@ var View = {
 		var task = this.selectors.$taskBox.value.trim();
 		if(task.length > 0){
 			Model.addTask(task);
-			this.renderTaskList(Model.fetchTask());
+			this.renderTaskList(Model.fetchTask(Model.filterHandle));
 			this.selectors.$taskBox.value = '';	
 		}
 	},
