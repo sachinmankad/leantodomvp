@@ -105,7 +105,7 @@ var View = {
 	handleDoneTaskClick: function(e)	{
 		var id = e.target.getAttribute('data-id');
 		Model.finishTask(id);
-		this.renderTaskList(Model.fetchTask());
+		this.renderTaskList(Model.fetchTask(Model.filterHandle));
 	},
 	
 	/**
@@ -115,7 +115,7 @@ var View = {
 	handleRemoveTaskClick : function(e)	{
 		var id = e.target.getAttribute('data-id');
 		Model.removeTask(id);
-		this.renderTaskList(Model.fetchTask());
+		this.renderTaskList(Model.fetchTask(Model.filterHandle));
 	},
 	
 	/**
@@ -140,14 +140,15 @@ var View = {
 	handleUpdateTaskClick : function(id)	{
 		var updateTask = document.getElementById(id + '_todo-edit-box').value;
 		Model.updateTask(id, updateTask);
-		this.renderTaskList(Model.fetchTask());
+		this.renderTaskList(Model.fetchTask(Model.filterHandle));
 	},
 	/**
 	* Method to handle SelectBox value changes.
 	* @param value string
 	**/
-	handleSelectBoxChange : function()	{
-		console.log('Select box change');
+	handleSelectBoxChange : function(value)	{
+		Model.filterHandle = value;
+		this.renderTaskList(Model.fetchTask(Model.filterHandle));
 	},
 		
 	/**
@@ -297,6 +298,7 @@ var SelectBox = function (target, data, selected, onChangeHandle) {
 				return datum.value == value;
 			});
 			this.selectors.$selectText.innerHTML = data.name;
+			this.onChangeHandle(this.selected);
 		} else if (
 			eventTarget === this.selectors.$selectBox || 
 			eventTarget === this.selectors.$selectText || 
@@ -340,6 +342,7 @@ var SelectBox = function (target, data, selected, onChangeHandle) {
 var Model = {
 	
 	data : [],
+	filterHandle : '0',
 	
 	/**
 	 * Method to generate a random unique id
@@ -397,13 +400,26 @@ var Model = {
 	},
 	
 	/**
-	 * Method to fetch all task from the localstorage
+	 * Method to fetch all task from the localstorage and filter based on parameters
+	 * @param value string
 	 * @return array
 	 */
-	fetchTask : function(){
+	fetchTask : function(value){
 		var todoList = localStorage.getItem('task');
+
 		this.data = (todoList) ? JSON.parse(todoList) : [];
-		return this.data;
+		
+		if(value && value == '1'){
+			return this.data.filter(function(item){ 
+				return !item.finished; 
+			});
+		}else if(value == '2'){
+			return this.data.filter(function(item){
+				return item.finished;
+			});
+		}else{
+			return this.data;
+		}
 	},
 	
 	/**
