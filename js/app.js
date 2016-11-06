@@ -1,12 +1,12 @@
 'use strict';
 
 var View = {
-	
 	/* Caching static dom selectors */
-	selectors:	{
+	selectors: {
 		$taskBox: document.querySelector('#taskBox'),
 		$addTask: document.querySelector('#addTask'),
-		$taskList : document.querySelector('.TaskList')
+		$taskList : document.querySelector('.TaskList'),
+		$selectBox : document.querySelector('#list-filter')
 	},
 	
 	/**
@@ -15,12 +15,14 @@ var View = {
 	 * @param data object
 	 * @return string
 	 */
-	getTodoBoxTemplate: function(data)	{
+	getTodoBoxTemplate: function(data) {
 		var html = document.getElementById('TaskTpl').innerHTML;
 			html = html.replace(/\{name\}/g, data.task);
 			html = html.replace(/\{id\}/g, data.id);
 			
-		html = (data.finished) ? html.replace(/\{className\}/g, 'Task--finished') : html.replace(/\{className\}/g, '');
+		html = 	(data.finished) ? 
+				html.replace(/\{className\}/g, 'Task--finished') : 
+				html.replace(/\{className\}/g, '');
 			
 		return html;
 	},
@@ -30,12 +32,12 @@ var View = {
 	 * object to html string and append to the list  
 	 * @param tasks array
 	 */
-	renderTaskList: function(tasks)	{
+	renderTaskList: function(tasks) {
 		var html = '';
 		
 		this.selectors.$taskList.innerHTML = '';
 		
-		tasks.forEach(function(task)	{
+		tasks.forEach(function(task) {
 			html += this.getTodoBoxTemplate(task);
 		}.bind(this));
 		
@@ -46,20 +48,21 @@ var View = {
 	/**
 	 * Method to bind event handlers for dynamic generated task controls.
 	 */
-	bindEventToTaskControlButtons: function()	{
+	bindEventToTaskControlButtons: function() {
+
 		var deleteButtons = document.querySelectorAll('.Task__Icon--delete'),
 			doneButtons = document.querySelectorAll('.Task__Icon--done'),
 			editButtons = document.querySelectorAll('.Task__Icon--edit')
 		
-		deleteButtons.forEach(function(button)	{
+		deleteButtons.forEach(function(button) {
 			button.addEventListener('click', this.handleRemoveTaskClick.bind(this));
 		}.bind(this));
 		
-		doneButtons.forEach(function(button){
+		doneButtons.forEach(function(button) {
 			button.addEventListener('click', this.handleDoneTaskClick.bind(this));
 		}.bind(this));
 		
-		editButtons.forEach(function(button){
+		editButtons.forEach(function(button) {
 			button.addEventListener('click', this.handleEditTaskClick.bind(this));
 		}.bind(this));
 		
@@ -68,7 +71,7 @@ var View = {
 	/**
 	 * Method to add task to model.
 	 */
-	addTask: function()	{
+	addTask: function() {
 		var task = this.selectors.$taskBox.value.trim();
 		if(task.length > 0){
 			Model.addTask(task);
@@ -89,7 +92,7 @@ var View = {
 	 * Method to handle add task on enter 
 	 * @param e object
 	 */
-	handleAddTaskEnter : function(e){
+	handleAddTaskEnter : function(e)	{
 		if(e.keyCode === 13){
 			this.addTask();
 		}
@@ -99,7 +102,7 @@ var View = {
 	 * Method to handle done task click 
 	 * @param e object
 	 */
-	handleDoneTaskClick: function(e){
+	handleDoneTaskClick: function(e)	{
 		var id = e.target.getAttribute('data-id');
 		Model.finishTask(id);
 		this.renderTaskList(Model.fetchTask());
@@ -134,10 +137,17 @@ var View = {
 	 * Method to handle update task click 
 	 * @param e object
 	 */
-	handleUpdateTaskClick : function(id){
+	handleUpdateTaskClick : function(id)	{
 		var updateTask = document.getElementById(id + '_todo-edit-box').value;
 		Model.updateTask(id, updateTask);
 		this.renderTaskList(Model.fetchTask());
+	},
+	/**
+	* Method to handle SelectBox value changes.
+	* @param value string
+	**/
+	handleSelectBoxChange : function()	{
+		console.log('Select box change');
 	},
 		
 	/**
@@ -145,7 +155,7 @@ var View = {
 	 * @param id string
 	 * @param hide boolean
 	 */
-	toggleTaskWrapper : function(id, hide){
+	toggleTaskWrapper : function(id, hide)	{
 		var controlWrapper = document.getElementById(id+'_task-control-wrapper'),
 			editWrapper = document.getElementById(id+'_task-edit-wrapper');
 			
@@ -172,8 +182,158 @@ var View = {
 	init: function()	{
 		this.loadEventBindings();
 		this.renderTaskList(Model.fetchTask());
+
+		var data = [
+			{
+				value: '0',
+				name: 'All Tasks'
+			}, {
+				value: '1',
+				name: 'Pending Tasks'
+			}, {
+				value: '2',
+				name: 'Completed Tasks'
+			}
+		];
+
+		/** Initializing the select box **/
+		var selectBox = new SelectBox(
+			this.selectors.$selectBox, 
+			data, 
+			0,
+			this.handleSelectBoxChange.bind(this)
+		);
 	}
 };
+/**
+* Select Box Module
+* @param target DOMObject
+* @param data
+* @param selected
+* @return {SelectBox}
+* @constructor
+**/
+var SelectBox = function (target, data, selected, onChangeHandle) {
+	this.target = target;
+	this.data = data;
+	this.selectors = {};
+	this.selected = selected;
+	this.onChangeHandle = onChangeHandle;
+
+	/**
+	* Method to get the HTML string for the select box
+	* 
+	**/
+	function getSelectBoxTpl()	{
+		var selectBoxHtml = document.getElementById('SelectBoxTpl').innerHTML,
+				selectBoxListItemHtml = document.getElementById('SelectBoxListItemTpl').innerHTML,
+				listItem = '';
+
+		this.data.forEach(function(item)	{
+				listItem += selectBoxListItemHtml.replace('{value}', item.value).replace('{name}', item.name);
+		}, this);
+		
+		var data = this.data.find(function(datum){
+			return datum.value == this.selected;
+		}, this);
+
+		return selectBoxHtml.replace('{listItem}', listItem).replace('{selectedName}', data.name);
+	}
+
+	/**
+	* Method to render the select box to the provided target
+	**/
+	function renderSelectBox(){
+		this.target.innerHTML = getSelectBoxTpl.call(this);
+	}
+
+	/**
+	* Method to toggle select box list
+	* @param hide boolean
+	**/
+	function toggleSelectBoxList(hide)	{
+		var selectList = this.selectors.$selectList;
+		
+		if(hide){
+			selectList.classList.add('hide');
+		}else{
+			selectList.classList.remove('hide');
+		}
+	}
+
+	/**
+	* Method to add/remove selection style to select box list item
+	**/
+	function modifyListItemSelection()	{
+		var value = '';
+		this.selectors.$selectListItem.forEach(function(item){
+			value = item.getAttribute('data-value');
+
+			if(this.selected === value){
+				item.classList.add('SelectBox__ListItem--selected');
+			}else{
+				item.classList.remove('SelectBox__ListItem--selected');
+			}
+		}, this);
+	}
+
+	/**
+	* Method to handle the select box item select. Similar to on change event of 
+	* select control. In this method we call the onChange event handle that we
+	* passed during intialization.
+	* module
+	* @param e obj
+	**/
+	function handleSelectBoxClick(e) {
+		var eventTarget =e.target,
+				value = eventTarget.getAttribute('data-value'),
+				hide = false;
+
+		if (value)	{
+			hide = true;
+			this.selected = value;
+			modifyListItemSelection.call(this);
+			var data = this.data.find(function(datum){
+				return datum.value == value;
+			});
+			this.selectors.$selectText.innerHTML = data.name;
+		} else if (
+			eventTarget === this.selectors.$selectBox || 
+			eventTarget === this.selectors.$selectText || 
+			eventTarget === this.selectors.$selectIcon
+		)	{
+			hide = false;
+		} else {
+			hide = true;
+		}		
+
+		toggleSelectBoxList.call(this, hide);			
+	}
+	/**
+	*Method to cache all selectors.
+	**/
+	function cacheSelectors()	{
+		this.selectors.$selectBox = this.target.querySelector('.SelectBox');
+		this.selectors.$selectText = this.target.querySelector('.SelectBox__Text');
+		this.selectors.$selectIcon = this.target.querySelector('.SelectBox__Icon');
+		this.selectors.$selectList = this.target.querySelector('.SelectBox__List');
+		this.selectors.$selectListItem = this.target.querySelectorAll('.SelectBox__ListItem');
+	}
+	/**
+	* Method to load all event bindgs for static DOM elements
+	**/
+	function loadEventBindings() {
+		document.body.addEventListener('click', handleSelectBoxClick.bind(this));
+	}
+
+	renderSelectBox.call(this);
+	cacheSelectors.call(this);
+	loadEventBindings.call(this);
+
+	return this;
+};
+
+
 
 
 /* Data Model to handle localstorage and application data */
