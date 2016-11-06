@@ -5,9 +5,7 @@
   <title>Lean Todo</title>
 	<meta name="HandheldFriendly" content="true"/>
 	<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes"/>
-	<title>Todo</title>
-	<link rel="stylesheet" href="css/style.css" type="text/css"/>
-  <link rel="stylesheet" href="css/style.css" type="text/css"/>
+  	<link rel="stylesheet" href="css/style.css" type="text/css"/>
 </head>
 <body>
 <header class="Header">
@@ -18,7 +16,9 @@
 <div class="Content">
   <div class="Task__Wrapper">
     <input autofocus="true" id="taskBox" type="text" class="Task__Input" placeholder="Create a task here...."/>
-    <button id="addTask" class="Task__Button Task__Button--add">Add Task</button>
+    <button id="addTask" class="Task__Button Task__Button--add">
+    	Add Task
+    </button>
   </div>
 
   <div id="list-filter" class="TaskList__Filter"></div>
@@ -40,9 +40,7 @@
 </script>
 
 <script type="text/template" id="SelectBoxListItemTpl">
-	<li class="SelectBox__ListItem {className}" data-value="{value}">
-		{name}
-	</li>
+	<li class="SelectBox__ListItem {className}" data-value="{value}">{name}</li>
 </script>
 
 <script type="text/template" id="TaskTpl">

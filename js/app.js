@@ -104,6 +104,7 @@ var View = {
 	 */
 	handleDoneTaskClick: function(e)	{
 		var id = e.target.getAttribute('data-id');
+		
 		Model.finishTask(id);
 		this.renderTaskList(Model.fetchTask(Model.filterHandle));
 	},
@@ -114,6 +115,7 @@ var View = {
 	 */
 	handleRemoveTaskClick : function(e)	{
 		var id = e.target.getAttribute('data-id');
+
 		Model.removeTask(id);
 		this.renderTaskList(Model.fetchTask(Model.filterHandle));
 	},
@@ -139,6 +141,7 @@ var View = {
 	 */
 	handleUpdateTaskClick : function(id)	{
 		var updateTask = document.getElementById(id + '_todo-edit-box').value;
+		
 		Model.updateTask(id, updateTask);
 		this.renderTaskList(Model.fetchTask(Model.filterHandle));
 	},
@@ -172,7 +175,7 @@ var View = {
 	/**
 	 * Method to load all event bindings for static dom elements
 	 */
-	loadEventBindings : function(){
+	loadEventBindings : function()	{
 		this.selectors.$addTask.addEventListener('click', this.handleAddTaskClick.bind(this));
 		this.selectors.$taskBox.addEventListener('keypress', this.handleAddTaskEnter.bind(this));
 	},
@@ -197,7 +200,7 @@ var View = {
 			}
 		];
 
-		/** Initializing the select box **/
+		/** Initializing the Select Box **/
 		var selectBox = new SelectBox(
 			this.selectors.$selectBox, 
 			data, 
@@ -223,7 +226,7 @@ var SelectBox = function (target, data, selected, onChangeHandle) {
 
 	/**
 	* Method to get the HTML string for the select box
-	* 
+	* @return string
 	**/
 	function getSelectBoxTpl()	{
 		var selectBoxHtml = document.getElementById('SelectBoxTpl').innerHTML,
@@ -231,7 +234,13 @@ var SelectBox = function (target, data, selected, onChangeHandle) {
 				listItem = '';
 
 		this.data.forEach(function(item)	{
-				listItem += selectBoxListItemHtml.replace('{value}', item.value).replace('{name}', item.name);
+				listItem += selectBoxListItemHtml
+											.replace('{value}', item.value)
+											.replace('{name}', item.name)
+											.replace('{className}', 
+																	(item.value == this.selected) 
+																		? 'SelectBox__ListItem--selected' 
+																		: '');
 		}, this);
 		
 		var data = this.data.find(function(datum){
@@ -267,6 +276,7 @@ var SelectBox = function (target, data, selected, onChangeHandle) {
 	**/
 	function modifyListItemSelection()	{
 		var value = '';
+
 		this.selectors.$selectListItem.forEach(function(item){
 			value = item.getAttribute('data-value');
 
@@ -282,7 +292,6 @@ var SelectBox = function (target, data, selected, onChangeHandle) {
 	* Method to handle the select box item select. Similar to on change event of 
 	* select control. In this method we call the onChange event handle that we
 	* passed during intialization.
-	* module
 	* @param e obj
 	**/
 	function handleSelectBoxClick(e) {
@@ -294,9 +303,11 @@ var SelectBox = function (target, data, selected, onChangeHandle) {
 			hide = true;
 			this.selected = value;
 			modifyListItemSelection.call(this);
+
 			var data = this.data.find(function(datum){
 				return datum.value == value;
 			});
+
 			this.selectors.$selectText.innerHTML = data.name;
 			this.onChangeHandle(this.selected);
 		} else if (
@@ -312,7 +323,7 @@ var SelectBox = function (target, data, selected, onChangeHandle) {
 		toggleSelectBoxList.call(this, hide);			
 	}
 	/**
-	*Method to cache all selectors.
+	* Method to cache all selectors.
 	**/
 	function cacheSelectors()	{
 		this.selectors.$selectBox = this.target.querySelector('.SelectBox');
@@ -395,12 +406,14 @@ var Model = {
 	 */
 	finishTask: function(id){
 		var index = this.data.map(function(item) { return item.id; } ).indexOf(id);
+		
 		this.data[index].finished = !this.data[index].finished;
 		localStorage.setItem('task', JSON.stringify(this.data));
 	},
 	
 	/**
-	 * Method to fetch all task from the localstorage and filter based on parameters
+	 * Method to fetch all task from the localstorage and filter based on 
+	 * parameters
 	 * @param value string
 	 * @return array
 	 */
@@ -428,6 +441,7 @@ var Model = {
 	 */
 	removeTask : function(id){
 		var index = this.getTaskIndexById(id);
+
 		this.data.splice(index, 1);
 		localStorage.setItem('task', JSON.stringify(this.data));
 	},
@@ -439,6 +453,7 @@ var Model = {
 	 */
 	updateTask : function(id, task){
 		var index = this.getTaskIndexById(id);
+
 		this.data[index].task = task;
 		localStorage.setItem('task', JSON.stringify(this.data));
 	}

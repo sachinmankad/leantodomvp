@@ -9,7 +9,6 @@ body  {
 .Header {
   width: 100%;
   height: 50px;
-  /*background-color: #9b59b6;*/
   background:#2c3e50;
   margin-bottom: 40px;
 }
@@ -27,11 +26,11 @@ body  {
   margin: auto;
 }
   
-  @media (min-width: 800px) {
+@media (min-width: 800px) {
 	.Content  {
 		width: 800px;
 	}
-  }
+}
 
 .TaskList__Filter {
   display: flex;
